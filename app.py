@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
-from flask.ext.cors import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = 'my_key'
