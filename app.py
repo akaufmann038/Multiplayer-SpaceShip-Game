@@ -1,14 +1,12 @@
 from flask import Flask, redirect, url_for, render_template, request, session
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = 'my_key'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
-
 socketio = SocketIO(app, cors_allowed_origins="*")
-cors = CORS(socketio,resources={r"/*":{"origins":"*"}})
+
 db = SQLAlchemy(app)
 
 class users(db.Model):

@@ -17,6 +17,8 @@ socket.on('connect', function() {
 });
 
 socket.on('message', function(msg) {
+    msg.header("Access-Control-Allow-Origin", "*")
+    msg.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     console.log("message: " + msg)
     var newP = document.createElement("p")
     var text = document.createTextNode(msg)
