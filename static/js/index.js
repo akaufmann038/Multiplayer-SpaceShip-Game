@@ -1,7 +1,7 @@
 const addText_button = document.getElementById("add-text")
 const container_div = document.getElementById("container-div")
 const message_input = document.getElementById("message")
-var socket = io.connect("http://127.0.0.1:5000");
+var socket = io.connect("https://hillside-chat.herokuapp.com/chat");
 
 addText_button.addEventListener("click", function() {
     var val = message_input.value
