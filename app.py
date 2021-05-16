@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config["SECRET_KEY"] = 'my_key'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
-socketio = SocketIO(app, cors_allowed_origins="http://hillside-chat.herokuapp.com/chat")
+socketio = SocketIO(app, cors_allowed_origins="http://hillside-chat.herokuapp.com")
 
 db = SQLAlchemy(app)
 
