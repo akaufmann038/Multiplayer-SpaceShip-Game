@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config["SECRET_KEY"] = 'my_key'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 db = SQLAlchemy(app)
 
@@ -87,8 +87,9 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login", status="new"))
 
+
+db.create_all()
 if __name__ == '__main__':
-    db.create_all()
     add_users()
     #app.run(debug=True)
     socketio.run(app)
