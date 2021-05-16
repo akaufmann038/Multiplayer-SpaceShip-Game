@@ -6,9 +6,9 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.config["SECRET_KEY"] = 'my_key'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
-cors = CORS(app,resources={r"/*":{"origins":"*"}})
-socketio = SocketIO(app, cors_allowed_origins="*")
 
+socketio = SocketIO(app, cors_allowed_origins="*")
+cors = CORS(socketio,resources={r"/*":{"origins":"*"}})
 db = SQLAlchemy(app)
 
 class users(db.Model):
