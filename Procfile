@@ -1,1 +1,1 @@
-web: werkzeug app:app
+web: flask run app:app
