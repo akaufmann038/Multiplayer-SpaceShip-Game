@@ -2,14 +2,7 @@ const addText_button = document.getElementById("add-text")
 const container_div = document.getElementById("container-div")
 const message_input = document.getElementById("message")
 var socket = io.connect("https://hillside-chat.herokuapp.com/chat");
-const io = require("socket.io")(httpServer, {
-    cors: {
-      origin: "https://hillside-chat.herokuapp.com/chat",
-      methods: ["GET", "POST"],
-      allowedHeaders: ["my-custom-header"],
-      credentials: true
-    }
-  });
+
 
 addText_button.addEventListener("click", function() {
     var val = message_input.value
