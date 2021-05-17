@@ -93,5 +93,5 @@ db.create_all()
 if __name__ == '__main__':
     add_users()
     #app.run(debug=True)
-    #socketio.run(app)
-    app.run()
+    socketio.run(app)
+    #app.run()
