@@ -75,6 +75,11 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login", status="new"))
 
+@socketio.on("Connect Message")
+def connect_message(msg):
+    user = session["user"]
+    send(f"{user} {msg}")
+
 @socketio.on('message')
 def handle_message(data):
     if data == "User is connected!":
@@ -92,6 +97,5 @@ def handle_disconnect():
 db.create_all()
 if __name__ == '__main__':
     add_users()
-    #app.run(debug=True)
     #socketio.run(app)
     app.run()

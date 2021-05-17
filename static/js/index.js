@@ -1,6 +1,8 @@
 const addText_button = document.getElementById("add-text")
 const container_div = document.getElementById("container-div")
 const message_input = document.getElementById("message")
+// NOTE: when deploying, take argument out of io
+//"http://127.0.0.1:5000/chat"
 var socket = io()
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,7 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     socket.on('connect', function() {
-        socket.send("User is connected!");
+        socket.emit("Connect Message", "has joined");
+        //socket.send("User is connected!")
+        //console.log("user is connected!")
     });
     
     socket.on('message', function(msg) {
@@ -19,13 +23,15 @@ document.addEventListener("DOMContentLoaded", () => {
         newP.appendChild(text)
         container_div.appendChild(newP)
     });
+
+    addText_button.addEventListener("click", function() {
+        var val = message_input.value
+        if (val == "close") {
+            socket.send("client disconnected!")
+            socket.close()
+        }
+        console.log("message sent")
+        socket.send(val)
+    })
 })
 
-addText_button.addEventListener("click", function() {
-    var val = message_input.value
-    if (val == "close") {
-        socket.send("client disconnected!")
-        socket.close()
-    }
-    socket.send(val)
-})
