@@ -4,7 +4,9 @@ const message_input = document.getElementById("message")
 var socket = io()
 
 document.addEventListener("DOMContentLoaded", () => {
-    var socket = io.connect("http://" + document.domain + ":" + location.port)
+    var socket = io.connect("http://" + document.domain + ":" + location.port, {
+        transports: ['websocket']
+    })
 
     socket.on('connect', function() {
         socket.send("User is connected!");
