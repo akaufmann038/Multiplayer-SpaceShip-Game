@@ -1,6 +1,7 @@
 const addText_button = document.getElementById("add-text")
 const container_div = document.getElementById("container-div")
 const message_input = document.getElementById("message")
+const io = require("socket.io-client");
 var socket = io()
 
 
