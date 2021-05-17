@@ -1,9 +1,23 @@
 const addText_button = document.getElementById("add-text")
 const container_div = document.getElementById("container-div")
 const message_input = document.getElementById("message")
-const io = require("socket.io-client");
 var socket = io()
 
+document.addEventListener("DOMContentLoaded", () => {
+    var socket = io.connect("http://" + document.domain + ":" + location.port)
+
+    socket.on('connect', function() {
+        socket.send("User is connected!");
+    });
+    
+    socket.on('message', function(msg) {
+        console.log("message: " + msg)
+        var newP = document.createElement("p")
+        var text = document.createTextNode(msg)
+        newP.appendChild(text)
+        container_div.appendChild(newP)
+    });
+})
 
 addText_button.addEventListener("click", function() {
     var val = message_input.value
@@ -13,15 +27,3 @@ addText_button.addEventListener("click", function() {
     }
     socket.send(val)
 })
-
-socket.on('connect', function() {
-    socket.send("User is connected!");
-});
-
-socket.on('message', function(msg) {
-    console.log("message: " + msg)
-    var newP = document.createElement("p")
-    var text = document.createTextNode(msg)
-    newP.appendChild(text)
-    container_div.appendChild(newP)
-});

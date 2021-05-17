@@ -3,9 +3,9 @@ from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = 'my_key'
+app.secret_key = 'my_key'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
-socketio = SocketIO(app, cors_allowed_origins="http://hillside-chat.herokuapp.com")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 db = SQLAlchemy(app)
 
@@ -35,18 +35,6 @@ def add_users():
 
     db.session.commit()
 
-@socketio.on('message')
-def handle_message(data):
-    if data == "User is connected!":
-        user = session["user"]
-        send(f'{user} has joined', broadcast=True)
-    else:
-        send(data, broadcast=True)
-
-@socketio.on("disconnect")
-def handle_disconnect():
-    user = session["user"]
-    send(f"{user} has left", broadcast=True)
 
 @app.route("/chat")
 def chat():
@@ -87,9 +75,23 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login", status="new"))
 
+@socketio.on('message')
+def handle_message(data):
+    if data == "User is connected!":
+        user = session["user"]
+        send(f'{user} has joined', broadcast=True)
+    else:
+        send(data, broadcast=True)
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    user = session["user"]
+    send(f"{user} has left", broadcast=True)
+
 
 db.create_all()
 if __name__ == '__main__':
     add_users()
     #app.run(debug=True)
-    socketio.run(app)
+    #socketio.run(app)
+    app.run()
