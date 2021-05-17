@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     socket.on('connect', function() {
-        socket.emit("Connect Message", "has joined");
+        socket.emit("connect-message", "has joined");
         console.log("test")
     });
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     addText_button.addEventListener("click", function() {
         var val = message_input.value
-        socket.emit("Chat Message", val)
+        socket.emit("chat-message", val)
         //socket.send(val)
     })
 })

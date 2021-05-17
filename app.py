@@ -75,21 +75,16 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login", status="new"))
 
-@socketio.on("Connect Message")
+@socketio.on("connect-message")
 def connect_message(msg):
     user = session["user"]
     send(f"{user} {msg}", broadcast=True)
 
-@socketio.on("Chat Message")
+@socketio.on("chat-message")
 def chat_message(msg):
     user = session["user"]
     send(f"{user}: {msg}", broadcast=True)
 
-
-# @socketio.on("Disconnect Message")
-# def disconnect_message(msg):
-#     user = session["user"]
-#     send(f"{user} {msg}", broadcast=True)
 
 @socketio.on("disconnect")
 def handle_disconnect():
