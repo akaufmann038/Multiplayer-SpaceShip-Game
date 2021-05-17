@@ -85,13 +85,11 @@ def chat_message(msg):
     user = session["user"]
     send(f"{user}: {msg}", broadcast=True)
 
-@socketio.on('message')
-def handle_message(data):
-    if data == "User is connected!":
-        user = session["user"]
-        send(f'{user} has joined', broadcast=True)
-    else:
-        send(data, broadcast=True)
+
+# @socketio.on("Disconnect Message")
+# def disconnect_message(msg):
+#     user = session["user"]
+#     send(f"{user} {msg}", broadcast=True)
 
 @socketio.on("disconnect")
 def handle_disconnect():
@@ -102,5 +100,5 @@ def handle_disconnect():
 db.create_all()
 if __name__ == '__main__':
     add_users()
-    #socketio.run(app)
-    app.run()
+    socketio.run(app)
+    #app.run()

@@ -3,7 +3,7 @@ const container_div = document.getElementById("container-div")
 const message_input = document.getElementById("message")
 // NOTE: when deploying, take argument out of io
 //"http://127.0.0.1:5000/chat"
-var socket = io()
+var socket = io("http://127.0.0.1:5000/chat")
 
 document.addEventListener("DOMContentLoaded", () => {
     var socket = io.connect("http://" + document.domain + ":" + location.port, {
@@ -12,7 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socket.on('connect', function() {
         socket.emit("Connect Message", "has joined");
+
+        // socket.on('disconnect', function() {
+        //     console.log("disconnect")
+        //     socket.emit("Disconnect Message", "has disconnected")
+        // })s
     });
+
     
     socket.on('message', function(msg) {
         console.log("message: " + msg)
