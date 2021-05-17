@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.secret_key = 'my_key'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
 
 db = SQLAlchemy(app)
 
@@ -75,25 +75,35 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login", status="new"))
 
-@socketio.on("connect-message")
-def connect_message(msg):
-    user = session["user"]
-    send(f"{user} {msg}", broadcast=True)
+# @socketio.on("message")
+# def handle_message(msg):
+#     if msg == "User connected!":
+#         user = session["user"]
+#         send(f"{user} has joined", broadcast=True)
+#     else:
+#         send(msg, broadcast=True)
+
+# @socketio.on("connect-message")
+# def connect_message(msg):
+#     #user = session["user"]
+#     user = session.get("user")
+#     send(f"{user} {msg}", broadcast=True)
 
 @socketio.on("chat-message")
 def chat_message(msg):
-    user = session["user"]
+    #user = session["user"]
+    user = session.get("user")
     send(f"{user}: {msg}", broadcast=True)
 
 
-@socketio.on("disconnect")
-def handle_disconnect():
-    #user = session["user"]
-    send(f"user disconnected", broadcast=True)
+# @socketio.on("disconnect")
+# def handle_disconnect():
+#     #user = session["user"]
+#     send(f"user disconnected", broadcast=True)
 
 
 db.create_all()
 if __name__ == '__main__':
     add_users()
-    #socketio.run(app)
-    app.run()
+    socketio.run(app)
+    #app.run()
