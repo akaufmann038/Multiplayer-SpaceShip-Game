@@ -88,8 +88,8 @@ def chat_message(msg):
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    user = session["user"]
-    send(f"{user} has left", broadcast=True)
+    #user = session["user"]
+    send(f"user disconnected", broadcast=True)
 
 
 db.create_all()
