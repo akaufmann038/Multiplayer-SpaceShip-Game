@@ -78,7 +78,12 @@ def logout():
 @socketio.on("Connect Message")
 def connect_message(msg):
     user = session["user"]
-    send(f"{user} {msg}")
+    send(f"{user} {msg}", broadcast=True)
+
+@socketio.on("Chat Message")
+def chat_message(msg):
+    user = session["user"]
+    send(f"{user}: {msg}", broadcast=True)
 
 @socketio.on('message')
 def handle_message(data):
