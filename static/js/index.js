@@ -12,11 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socket.on('connect', function() {
         socket.emit("Connect Message", "has joined");
-
-        // socket.on('disconnect', function() {
-        //     console.log("disconnect")
-        //     socket.emit("Disconnect Message", "has disconnected")
-        // })s
+        console.log("test")
     });
 
     
