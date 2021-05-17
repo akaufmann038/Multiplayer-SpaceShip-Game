@@ -100,5 +100,5 @@ def handle_disconnect():
 db.create_all()
 if __name__ == '__main__':
     add_users()
-    socketio.run(app)
-    #app.run()
+    #socketio.run(app)
+    app.run()
