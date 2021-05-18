@@ -89,6 +89,7 @@ def logout():
 #     user = session.get("user")
 #     send(f"{user} {msg}", broadcast=True)
 
+# NOTE: only send message if message is not empty
 @socketio.on("chat-message")
 def chat_message(msg):
     #user = session["user"]
@@ -105,5 +106,5 @@ def chat_message(msg):
 db.create_all()
 if __name__ == '__main__':
     add_users()
-    #socketio.run(app)
-    app.run()
+    socketio.run(app)
+    #app.run()
