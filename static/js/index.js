@@ -3,7 +3,7 @@ const container_div = document.getElementById("message-log-container")
 const message_input = document.getElementById("message")
 // NOTE: when deploying, take argument out of io
 //"http://127.0.0.1:5000/chat"
-var socket = io("http://127.0.0.1:5000/chat")
+var socket = io()
 
 document.addEventListener("DOMContentLoaded", () => {
     var socket = io.connect("http://" + document.domain + ":" + location.port, {
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // create new div container
         var messageContainer = document.createElement("div")
         messageContainer.id = "message-sent-container"
-        
+
         // create p to contain message
         var newP = document.createElement("p")
         newP.id = "message-text"
