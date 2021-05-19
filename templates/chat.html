@@ -1,26 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="container-div">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#" style="font-family: Garamond, serif;">Navbar</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/chat" style="font-family: Garamond, serif;">Chat</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/logout" style="font-family: Garamond, serif;">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <p>Welcome {{ user }}</p>
+<div id="container-div" style="margin-top: 0px;">
+    <ul id="nav-container">
+        <li id="nav-content" style="margin-left: 1%;"><a href="/chat" id="nav-text">Chat</a></li>
+        <li id="nav-content"><a href="/logout" id="nav-text">Logout</a></li>
+<!--         <li id="nav-content-title"><a>The Hillside Chat</a></li> -->
+      </ul>
+  <div id="title-content">
+    <a>The Hillside Chat</a>
+  <div>
     <div id="chat-container">
         <div id="message-log-container">
             <div id="message-sent-container">
@@ -31,11 +19,11 @@
             </div>
         </div>
         <!-- margin: auto; top: 70%; left: 0; bottom: 0; right: 0; -->
-        <div class="message-container mx-auto position-absolute" style="width: 520px; margin: auto; top: 90%; left: 0; bottom: 0; right: 0;">
+        <div class="message-container mx-auto" style="width: 80%; margin: auto; margin-top: 3%;">
             <!-- <input type="text" placeholder="Message" id="message"/> -->
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Message" aria-label="Recipient's username" aria-describedby="button-addon2" id="message">
-                <button class="btn btn-outline-secondary" type="submit" id="add-text" style="background-color: lightskyblue">Button</button>
+                <button class="btn btn-outline-secondary" type="submit" id="add-text">Button</button>
             </div>
         </div>
     </div>

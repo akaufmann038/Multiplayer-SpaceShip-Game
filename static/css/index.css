@@ -1,37 +1,82 @@
-#chat-container {
-    background-color: cadetblue;
-    margin: auto;
-    position: absolute;
-    width: 60%;
-    top: 10%;
-    bottom: 3%;
-    left: 0;
-    right: 0;
-}
+body {
+    background: linear-gradient(0deg, rgba(255,231,180,1) 0%, rgba(255,170,28,0.6222864145658263) 100%);
+    }
+    
+    #nav-container {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        background-color: #84CEEB;
+        z-index: 100;
+      }
+      
+      #nav-content {
+        display: inline-block;
+        margin-right: 1%;
+        text-decoration: none;
+        font-family: Garamond, serif;
+        font-size: 20px;
+        padding: 2px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+      
+      #title-content {
+          display: inline-block;
+          margin-top: 1%;
+          margin-left: 1%;
+          font-size: 30px;
+          font-family: Garamond, serif;
+      }
+      
+      #nav-text {
+          text-decoration: none;
+          color: #383838;
+          transition: color .3s;
+      }
+    
+    #nav-text:hover {
+      color: #ffffff;
+    }
+    
+    
+    #chat-container {
+        margin: auto;
+        position: absolute;
+        width: 50%;
+        top: 10%;
+        bottom: 3%;
+        left: 0;
+        right: 0;
+        background-color: #84CEEB;
+        border-radius: 10px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+    
+    #message-sent-container {
+        width: 95%;
+        text-align: center;
+        background-color: #5AB9EA;
+        margin-left: auto;
+        margin-right: auto;
+        height: 50px;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        border-radius: 10px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+    
+    #message-log-container {
+        overflow: auto;
+        height: 85%;
+    }
 
-#message-sent-container {
-    width: 520px;
-    text-align: center;
-    background-color: bisque;
-    margin-left: auto;
-    margin-right: auto;
-    height: 50px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    border-radius: 10px;
-}
-
-#message-log-container {
-    overflow: auto;
-    height: 85%;
-    background-color: coral;
-}
-
-#message-text {
-    display: inline-block;
-    text-align: left;
-    margin-top: 10px;
-    width: 95%;
-    font-family: Garamond, serif;
-    font-size: 20px;
-}
+    
+    #message-text {
+        display: inline-block;
+        text-align: left;
+        margin-top: 10px;
+        width: 95%;
+        font-family: Garamond, serif;
+        font-size: 20px;
+    }
