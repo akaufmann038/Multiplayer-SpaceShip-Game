@@ -10,7 +10,7 @@ keyDown = { 87: false, 65: false, 83: false, 68: false }
 
 // NOTE: when deploying, take argument out of io
 //"http://127.0.0.1:5000/chat"
-var socket = io("http://127.0.0.1:5000/chat")
+var socket = io()
 
 
 var socket = io.connect("http://" + document.domain + ":" + location.port, {
