@@ -4,6 +4,7 @@ const message_input = document.getElementById("message")
 const messageLog_div = document.getElementById("message-log-container")
 const outerContainer_div = document.getElementById("container-div")
 const container_body = document.getElementById("body-container")
+var currentUser = null
 
 keyDown = { 87: false, 65: false, 83: false, 68: false }
 
@@ -20,11 +21,11 @@ function updateScroll() {
     messageLog_div.scrollTop = messageLog_div.scrollHeight;
 }
 
-function launchShip(text) {
+function launchShip(text, userName) {
     if (text == " launch") {
         // create image
         var ship = document.createElement("img")
-        ship.id = "ship"
+        ship.id = "ship-" + userName
         ship.src = "/static/izzy.png"
         ship.alt = "Ship"
         ship.style.width = "10%"
@@ -35,12 +36,26 @@ function launchShip(text) {
         ship.style.zIndex = "5"
         ship.style.transform = "rotate(0deg)"
 
+        console.log("launch ship, currentUser: " + userName)
+        console.log(parseInt(ship.style.transform.substring(7, ship.style.transform.search("d"))))
+
         document.documentElement.appendChild(ship)
 
         // start game loop
         gameLoop()
     }
 }
+
+socket.on("connect", function () {
+    console.log("connected")
+    socket.emit("connect-message")
+})
+
+socket.on("connect-message", function (user) {
+    // sets the current user
+    currentUser = user
+    console.log("current user: " + currentUser)
+})
 
 socket.on('message', function (msg) {
     console.log("message: " + msg)
@@ -61,6 +76,7 @@ socket.on('message', function (msg) {
 
     // create text nodes
     var text = document.createTextNode(msg.slice(nameEnd + 1))
+
     var userName = document.createTextNode(msg.slice(0, nameEnd + 1))
 
     // append necessary elements
@@ -73,8 +89,13 @@ socket.on('message', function (msg) {
     updateScroll()
 
     // test for launched ship
-    launchShip(msg.slice(nameEnd + 1))
+    // NOTE: problem is here. passing in name
+    launchShip(msg.slice(nameEnd + 1), msg.slice(0, nameEnd))
 });
+
+socket.on("ship-message", function (data) {
+    updateGame(data)
+})
 
 addText_button.addEventListener("click", function () {
     // get input value and sent to server
@@ -122,44 +143,43 @@ function resetKeyDown() {
         keyDown[element] = false
     })
 }
-function moveShip(key) {
+
+// gets ship of current user
+function getShip(currUser) {
+    console.log(currUser)
+    return document.getElementById("ship-" + currUser)
+}
+
+function moveShip(key, currUser) {
     if (parseInt(key) == 87) {
-        var ship = document.getElementById("ship")
+        var ship = getShip(currUser)
 
-        // get ship angle
-        var angle = parseInt(ship.style.transform.substring(7, ship.style.transform.search("d")))
-        //console.log(ship.style.transform)
+        if (ship !== null) {
+            console.log(currUser)
 
-        // get x and y scalars from rotation
-        var xScalar = 1.5 * Math.sin(toRadians(angle))
-        var yScalar = 1.5 * Math.cos(toRadians(angle))
+            // get ship angle
+            var angle = parseInt(ship.style.transform.substring(7, ship.style.transform.search("d")))
+            //console.log(ship.style.transform)
 
-        // change ships location
-        changeLocation(xScalar, yScalar)
+            // get x and y scalars from rotation
+            var xScalar = 1.5 * Math.sin(toRadians(angle))
+            var yScalar = 1.5 * Math.cos(toRadians(angle))
 
-
-
-        // console.log("move up")
-        // var currentTopStyle = ship.style.top
-        // var currentTopNum = parseInt(currentTopStyle.substring(0, currentTopStyle.search("p")))
-        // console.log(currentTopNum)
-
-        // // change top style
-        // ship.style.top = currentTopNum + 1 + "px"
-
-        // console.log(ship.style.top)
+            // change ships location
+            changeLocation(xScalar, yScalar, currUser)
+        }
     }
     else if (key == 65) {
-        changeDegree(-1)
+        changeDegree(-1, currUser)
     }
     else if (key == 68) {
-        changeDegree(1)
+        changeDegree(1, currUser)
     }
 }
 
-function changeLocation(xScalar, yScalar) {
+function changeLocation(xScalar, yScalar, currUser) {
     //console.log("x: " + xScalar + " y: " + yScalar)
-    var ship = document.getElementById("ship")
+    var ship = getShip(currUser)
 
     // get current x and y
     var currentX = parseFloat(ship.style.left.substring(0, ship.style.left.search("p")))
@@ -171,39 +191,40 @@ function changeLocation(xScalar, yScalar) {
     //console.log("new x: " + currentX + xScalar + " new y: " + currentY + yScalar)
 }
 
-function toRadians (angle) {
+function toRadians(angle) {
     return angle * (Math.PI / 180);
-  }
+}
 
 // changes the rotation of the ship element
-function changeDegree(diff) {
-    var ship = document.getElementById("ship")
+function changeDegree(diff, currUser) {
+    var ship = getShip(currUser)
+    if (ship !== null) {
+        // get current degree
+        var currentDegreeStyle = ship.style.transform
+        var currentDegreeNum = parseInt(currentDegreeStyle.substring(7, currentDegreeStyle.search("d")))
 
-    // get current degree
-    var currentDegreeStyle = ship.style.transform
-    var currentDegreeNum = parseInt(currentDegreeStyle.substring(7, currentDegreeStyle.search("d")))
-
-    // change style
-    if (currentDegreeNum == 0 && diff == -1) {
-        var newDegree = 359
+        // change style
+        if (currentDegreeNum == 0 && diff == -1) {
+            var newDegree = 359
+        }
+        else if (currentDegreeNum == 359 && diff == 1) {
+            var newDegree = 0
+        }
+        else {
+            var newDegree = currentDegreeNum + diff
+        }
+        ship.style.transform = "rotate(" + newDegree + "deg)"
     }
-    else if (currentDegreeNum == 359 && diff == 1) {
-        var newDegree = 0
-    }
-    else {
-        var newDegree = currentDegreeNum + diff
-    }
-    ship.style.transform = "rotate(" + newDegree + "deg)"
 }
 
 // updates state of game based on keyDown
-function updateGame() {
+function updateGame(data) {
 
     // based on current keyDowns, move ship appropriately
-    Object.keys(keyDown).forEach(element => {
+    Object.keys(data["keyData"]).forEach(element => {
         // if key is held down
-        if (keyDown[element]) {
-            moveShip(element)
+        if (data["keyData"][element]) {
+            moveShip(element, data["user"])
         }
     })
 }
@@ -211,7 +232,11 @@ function updateGame() {
 function gameLoop() {
     //console.log(performance.now())
     // update state of game
-    updateGame()
+    // emit movement to server
+    socket.emit("ship-message", { "keyData": keyDown, "user": currentUser })
+    console.log("game loop active, current user: " + currentUser)
 
-    setTimeout(gameLoop, 1)
+    setTimeout(gameLoop, 10)
 }
+// PROBLEM: when alex launches ship, both alex and izzy's game loops start
+// may be related to why izzy is able to control alex's ship

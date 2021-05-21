@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, session
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -75,19 +75,16 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login", status="new"))
 
-# @socketio.on("message")
-# def handle_message(msg):
-#     if msg == "User connected!":
-#         user = session["user"]
-#         send(f"{user} has joined", broadcast=True)
-#     else:
-#         send(msg, broadcast=True)
+@socketio.on("ship-message")
+def ship_message(data):
+    # send back message to all clients
+    emit("ship-message", data, broadcast=True)
 
-# @socketio.on("connect-message")
-# def connect_message(msg):
-#     #user = session["user"]
-#     user = session.get("user")
-#     send(f"{user} {msg}", broadcast=True)
+
+@socketio.on("connect-message")
+def connect_message():
+    # send back current user in session
+    emit("connect-message", session.get("user"))
 
 # NOTE: only send message if message is not empty
 @socketio.on("chat-message")
@@ -106,5 +103,5 @@ def chat_message(msg):
 db.create_all()
 if __name__ == '__main__':
     add_users()
-    #socketio.run(app)
-    app.run()
+    socketio.run(app)
+    #app.run()
