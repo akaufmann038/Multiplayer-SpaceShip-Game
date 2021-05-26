@@ -20,8 +20,9 @@ class Game {
     constructor(user) {
         this.ship = { "top": 100, "left": 100, "angle": 0, "user": user } // object of ship with keys "top", "left", and angle
         this.rockets = [] // holds objects of rockets with keys "top" and "left"
-        this.keyDown = { 87: false, 65: false, 68: false }
+        this.keyDown = { 87: false, 65: false, 68: false, 83: false }
         this.rockets = [] // list of rockets
+        this.rocketId = 0
     }
 
     // updates the state of the game based on keyDown values
@@ -40,11 +41,19 @@ class Game {
             else if (this.keyDown[element] && element == 68) {
                 this.rotateShip(true)
             }
+            else if (this.keyDown[element] && element == 83) {
+                // console.log("top: " + this.ship["top"] + " left: " + this.ship["left"])
+                // var withinScreen = this.ship["top"] <= winHeight && this.ship["top"] >= 0 && this.ship["left"] <= winWidth && this.ship["left"] >= 0
+                // console.log(withinScreen)
+                console.log(this.rockets.length)
+            }
+    
+
             // move rockets
             this.moveRockets()
 
             // delete rockets that are off screen
-            this.deleteRockets()
+            this.rockets = this.deleteRockets()
         })
     }
 
@@ -56,9 +65,12 @@ class Game {
         var rocketTop = centerTop
         var rocketLeft = centerLeft
 
-        var rocket = { "top": rocketTop, "left": rocketLeft }
-
+        var rocket = { "top": rocketTop, "left": rocketLeft, "id": this.rocketId }
+        this.rocketId += 1
+        
         this.rockets.push(rocket)
+
+        console.log(rocket["id"])
     }
 
     moveRockets() {
@@ -69,14 +81,14 @@ class Game {
 
             element["left"] += xScalar
             element["top"] -= yScalar
-            //console.log("left: " + element["left"] + " top: " + element["top"])
         })
     }
 
     deleteRockets() {
         // NOTE: left off here. not deleting rockets when they go off the screen
-        this.rockets.filter(element => {
+        return this.rockets.filter(element => {
             var withinScreen = element["top"] <= winHeight && element["top"] >= 0 && element["left"] <= winWidth && element["left"] >= 0
+            console.log(withinScreen)
             return withinScreen
         })
     }
@@ -310,14 +322,13 @@ document.addEventListener("DOMContentLoaded", () => {
         drawRockets(data)
     }
 
-    function drawRockets(data) {
-        console.log("length:" + data["rockets"].length)
+    function drawRockets(data) { 
         for (let i = 0; i < data["rockets"].length; i++) {
-            var rocket = document.getElementById(data["ship"]["user"] + "-rocket-" + i)
+            var rocket = document.getElementById(data["ship"]["user"] + "-rocket-" + data["rockets"][i]["id"])
 
             if (rocket == null) {
                 rocket = document.createElement("div")
-                rocket.id = data["ship"]["user"] + "-rocket-" + i
+                rocket.id = data["ship"]["user"] + "-rocket-" + data["rockets"][i]["id"]
                 rocket.style.height = "10px"
                 rocket.style.width = "10px"
                 rocket.style.backgroundColor = "blue"
