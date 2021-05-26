@@ -6,6 +6,8 @@ const message_input = document.getElementById("message")
 const messageLog_div = document.getElementById("message-log-container")
 const outerContainer_div = document.getElementById("container-div")
 const container_body = document.getElementById("body-container")
+const winHeight = window.innerHeight // height of screen in px
+const winWidth = window.innerWidth // width of screen in px
 
 
 
@@ -38,9 +40,11 @@ class Game {
             else if (this.keyDown[element] && element == 68) {
                 this.rotateShip(true)
             }
-            // else if (this.keyDown[element] && element == 32) {
-            //     this.shootRocket()
-            // }
+            // move rockets
+            this.moveRockets()
+
+            // delete rockets that are off screen
+            this.deleteRockets()
         })
     }
 
@@ -48,15 +52,33 @@ class Game {
         // get top and left based on top, left, and angle of ship
         var centerTop = this.ship["top"] + (shipLength / 2)
         var centerLeft = this.ship["left"] + (shipLength / 2)
-        var angle = this.ship["angle"]
 
-        var rocketTop = centerTop + Math.sin(this.toRadians(angle))
-        var rocketLeft = centerLeft + Math.cos(this.toRadians(angle))
+        var rocketTop = centerTop
+        var rocketLeft = centerLeft
 
-        console.log("top: " + rocketTop + " left: " + rocketLeft)
         var rocket = { "top": rocketTop, "left": rocketLeft }
 
         this.rockets.push(rocket)
+    }
+
+    moveRockets() {
+        this.rockets.forEach(element => {
+            // get x and y scalars from rotation
+            var xScalar = 4.5 * Math.sin(this.toRadians(this.ship["angle"]))
+            var yScalar = 4.5 * Math.cos(this.toRadians(this.ship["angle"]))
+
+            element["left"] += xScalar
+            element["top"] -= yScalar
+            //console.log("left: " + element["left"] + " top: " + element["top"])
+        })
+    }
+
+    deleteRockets() {
+        // NOTE: left off here. not deleting rockets when they go off the screen
+        this.rockets.filter(element => {
+            var withinScreen = element["top"] <= winHeight && element["top"] >= 0 && element["left"] <= winWidth && element["left"] >= 0
+            return withinScreen
+        })
     }
 
     // moves ship
@@ -289,6 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drawRockets(data) {
+        console.log("length:" + data["rockets"].length)
         for (let i = 0; i < data["rockets"].length; i++) {
             var rocket = document.getElementById(data["ship"]["user"] + "-rocket-" + i)
 
