@@ -19,7 +19,7 @@ var socket = io()
 // game class
 class Game {
     constructor(user) {
-        this.ship = { "top": 100, "left": 100, "angle": 0, "user": user } // object of ship with keys "top", "left", and angle
+        this.ship = { "top": 100, "left": 100, "angle": 0, "user": user, "visible": false } // object of ship with keys "top", "left", and angle
         this.rockets = [] // holds objects of rockets with keys "top" and "left"
         this.keyDown = { 87: false, 65: false, 68: false }
         this.rockets = [] // list of rockets
@@ -56,18 +56,33 @@ class Game {
 
     shipHit() {
         // get all rockets currently in DOM
-        var rockets = document.getElementsByClassName("rockets")
+        var rockets = document.getElementsByTagName("span")
+        var otherRockets = []
+        if (rockets.length !== 0) {
+            for (var element of rockets) {
+                if (element.className !== "rocket-" + this.ship["user"]) {
+                    otherRockets.push(element)
+                }
+            }
+        }
 
         // check if any rockets collided with this ship
-        for (element of rockets) {
+        otherRockets.forEach(element => {
             var rocketTop = element.style.top.substring(0, element.style.top.search("p"))
             var rocketLeft = element.style.left.substring(0, element.style.left.search("p"))
 
             // if yes, remove this ship from DOM
             if (this.isHit(rocketTop, rocketLeft, this.ship["top"], this.ship["left"])) {
-                console.log("hit")
+                // get this ship
+                var thisShip = document.getElementById("ship-" + this.ship["user"])
+                console.log(thisShip)
+
+                if (thisShip !== null) {
+                    thisShip.remove()
+                    this.ship["visible"] = false
+                }
             }
-        }
+        })
     }
 
     // determines if given rocket has collided with given ship
@@ -210,6 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // creates game and sets the current user
         game = new Game(user)
 
+        // start game loop
+        gameLoop()
+
         console.log("current user: " + game.getCurrentUser())
     })
 
@@ -246,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // launch ship if this user typed in correct code
         if (msg.slice(nameEnd + 1) == " launch" && msg.slice(0, nameEnd) == game.getCurrentUser()) {
-            launch()
+            game.launch()
         }
     });
 
@@ -304,14 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //----------------------------------------------------
 
-    function launch() {
-        // make ship visible
-        // this.game.launch()
-
-        // start game loop
-        gameLoop()
-    }
-
     function updateScroll() {
         messageLog_div.scrollTop = messageLog_div.scrollHeight;
     }
@@ -323,32 +333,40 @@ document.addEventListener("DOMContentLoaded", () => {
         var user = shipData["user"]
         var ship = document.getElementById("ship-" + user)
 
-        // if ship does not exist, draw
-        if (ship == null) {
-            ship = document.createElement("img")
-            ship.id = "ship-" + user
-            ship.src = "/static/izzy.png"
-            ship.alt = "Ship"
-            ship.style.width = shipLength + "px"
-            ship.style.height = shipLength + "px"
-            ship.style.position = "absolute"
-            ship.style.zIndex = "5"
-            ship.style.backgroundColor = "blue"
-            document.documentElement.appendChild(ship)
-        }
-        // update left, top, and rotation CSS properties
-        ship.style.left = shipData["left"] + "px"
-        ship.style.top = shipData["top"] + "px"
-        ship.style.transform = "rotate(" + shipData["angle"] + "deg)"
+        // if ship is not visible, draw
+        if (shipData["visible"]) {
+            // if ship does not exist, draw
+            if (ship == null) {
+                ship = document.createElement("img")
+                ship.id = "ship-" + user
+                ship.src = "/static/izzy.png"
+                ship.alt = "Ship"
+                ship.style.width = shipLength + "px"
+                ship.style.height = shipLength + "px"
+                ship.style.position = "absolute"
+                ship.style.zIndex = "5"
+                ship.style.backgroundColor = "blue"
+                document.documentElement.appendChild(ship)
+            }
+            // update left, top, and rotation CSS properties
+            ship.style.left = shipData["left"] + "px"
+            ship.style.top = shipData["top"] + "px"
+            ship.style.transform = "rotate(" + shipData["angle"] + "deg)"
 
-        drawRockets(data)
+            drawRockets(data)
+        }
+        // if ship is not visible but exists in DOM
+        else if (!(shipData["visible"]) && ship !== null) {
+            // remove ship
+            ship.remove()
+        }
     }
 
     function deleteShips(data) {
         // NOTE: left off here
         // add user to class names to distinguish each client's rockets
         var rockets = document.getElementsByClassName("rocket-" + data["ship"]["user"])
-    
+
         // get rocket ids in DOM
         var rocketIdsDOM = []
         for (element of rockets) {
