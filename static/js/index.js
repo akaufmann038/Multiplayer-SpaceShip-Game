@@ -1,4 +1,5 @@
 const shipLength = 80
+const rocketLength = 10
 
 const addText_button = document.getElementById("add-text")
 const container_div = document.getElementById("message-log-container")
@@ -13,14 +14,14 @@ const winWidth = window.innerWidth // width of screen in px
 
 // NOTE: when deploying, take argument out of io
 //"http://127.0.0.1:5000/chat"
-var socket = io()
+var socket = io("http://127.0.0.1:5000/chat")
 
 // game class
 class Game {
     constructor(user) {
         this.ship = { "top": 100, "left": 100, "angle": 0, "user": user } // object of ship with keys "top", "left", and angle
         this.rockets = [] // holds objects of rockets with keys "top" and "left"
-        this.keyDown = { 87: false, 65: false, 68: false, 83: false }
+        this.keyDown = { 87: false, 65: false, 68: false }
         this.rockets = [] // list of rockets
         this.rocketId = 0
     }
@@ -41,13 +42,9 @@ class Game {
             else if (this.keyDown[element] && element == 68) {
                 this.rotateShip(true)
             }
-            else if (this.keyDown[element] && element == 83) {
-                // console.log("top: " + this.ship["top"] + " left: " + this.ship["left"])
-                // var withinScreen = this.ship["top"] <= winHeight && this.ship["top"] >= 0 && this.ship["left"] <= winWidth && this.ship["left"] >= 0
-                // console.log(withinScreen)
-                console.log(this.rockets.length)
-            }
-    
+
+            // test for hits
+            this.shipHit()
 
             // move rockets
             this.moveRockets()
@@ -55,6 +52,33 @@ class Game {
             // delete rockets that are off screen
             this.rockets = this.deleteRockets()
         })
+    }
+
+    shipHit() {
+        // get all rockets currently in DOM
+        var rockets = document.getElementsByClassName("rockets")
+
+        // check if any rockets collided with this ship
+        for (element of rockets) {
+            var rocketTop = element.style.top.substring(0, element.style.top.search("p"))
+            var rocketLeft = element.style.left.substring(0, element.style.left.search("p"))
+
+            // if yes, remove this ship from DOM
+            if (this.isHit(rocketTop, rocketLeft, this.ship["top"], this.ship["left"])) {
+                console.log("hit")
+            }
+        }
+    }
+
+    // determines if given rocket has collided with given ship
+    isHit(rocketTop, rocketLeft, shipTop, shipLeft) {
+        var topCenter = rocketTop + (rocketLength / 2)
+        var leftCenter = rocketLeft + (rocketLength / 2)
+
+        var widthWithin = (leftCenter > shipLeft) && (leftCenter < shipLeft + shipLength)
+        var lengthWithin = (topCenter > shipTop) && (topCenter < shipTop + shipLength)
+
+        return widthWithin && lengthWithin
     }
 
     shootRocket() {
@@ -67,7 +91,7 @@ class Game {
 
         var rocket = { "top": rocketTop, "left": rocketLeft, "id": this.rocketId, "angle": this.ship["angle"] }
         this.rocketId += 1
-        
+
         this.rockets.push(rocket)
     }
 
@@ -322,8 +346,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function deleteShips(data) {
         // NOTE: left off here
-        var rockets = document.getElementsByClassName("rocket")
-
+        // add user to class names to distinguish each client's rockets
+        var rockets = document.getElementsByClassName("rocket-" + data["ship"]["user"])
+    
         // get rocket ids in DOM
         var rocketIdsDOM = []
         for (element of rockets) {
@@ -354,9 +379,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (rocket == null) {
                 rocket = document.createElement("span")
                 rocket.id = data["ship"]["user"] + "-rocket-" + data["rockets"][i]["id"]
-                rocket.className = "rocket"
-                rocket.style.height = "10px"
-                rocket.style.width = "10px"
+                rocket.className = "rocket-" + data["ship"]["user"]
+                rocket.style.height = rocketLength + "px"
+                rocket.style.width = rocketLength + "px"
                 rocket.style.backgroundColor = "blue"
                 rocket.style.borderRadius = "50%"
                 rocket.style.position = "absolute"
