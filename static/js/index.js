@@ -13,7 +13,7 @@ const winWidth = window.innerWidth // width of screen in px
 
 // NOTE: when deploying, take argument out of io
 //"http://127.0.0.1:5000/chat"
-var socket = io("http://127.0.0.1:5000/chat")
+var socket = io()
 
 // game class
 class Game {
@@ -65,19 +65,17 @@ class Game {
         var rocketTop = centerTop
         var rocketLeft = centerLeft
 
-        var rocket = { "top": rocketTop, "left": rocketLeft, "id": this.rocketId }
+        var rocket = { "top": rocketTop, "left": rocketLeft, "id": this.rocketId, "angle": this.ship["angle"] }
         this.rocketId += 1
         
         this.rockets.push(rocket)
-
-        console.log(rocket["id"])
     }
 
     moveRockets() {
         this.rockets.forEach(element => {
             // get x and y scalars from rotation
-            var xScalar = 4.5 * Math.sin(this.toRadians(this.ship["angle"]))
-            var yScalar = 4.5 * Math.cos(this.toRadians(this.ship["angle"]))
+            var xScalar = 4.5 * Math.sin(this.toRadians(element["angle"]))
+            var yScalar = 4.5 * Math.cos(this.toRadians(element["angle"]))
 
             element["left"] += xScalar
             element["top"] -= yScalar
@@ -88,7 +86,6 @@ class Game {
         // NOTE: left off here. not deleting rockets when they go off the screen
         return this.rockets.filter(element => {
             var withinScreen = element["top"] <= winHeight && element["top"] >= 0 && element["left"] <= winWidth && element["left"] >= 0
-            console.log(withinScreen)
             return withinScreen
         })
     }
@@ -296,6 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateView(data) {
+
         var shipData = data["ship"]
 
         var user = shipData["user"]
@@ -322,13 +320,41 @@ document.addEventListener("DOMContentLoaded", () => {
         drawRockets(data)
     }
 
-    function drawRockets(data) { 
+    function deleteShips(data) {
+        // NOTE: left off here
+        var rockets = document.getElementsByClassName("rocket")
+
+        // get rocket ids in DOM
+        var rocketIdsDOM = []
+        for (element of rockets) {
+            var id = parseInt(element.id.substring(element.id.search("-")).substring(8))
+            rocketIdsDOM.push(id)
+        }
+
+        // get rock ids in game state
+        var rocketIdsGS = data["rockets"].map(element => {
+            return element["id"]
+        })
+
+        // if game id is not in DOM, delete respective element in DOM
+        rocketIdsDOM.forEach(element => {
+            if (!(element in rocketIdsGS)) {
+                var toDelete = document.getElementById(data["ship"]["user"] + "-rocket-" + element)
+                toDelete.remove()
+            }
+        })
+    }
+
+    function drawRockets(data) {
+        deleteShips(data)
+
         for (let i = 0; i < data["rockets"].length; i++) {
             var rocket = document.getElementById(data["ship"]["user"] + "-rocket-" + data["rockets"][i]["id"])
 
             if (rocket == null) {
-                rocket = document.createElement("div")
+                rocket = document.createElement("span")
                 rocket.id = data["ship"]["user"] + "-rocket-" + data["rockets"][i]["id"]
+                rocket.className = "rocket"
                 rocket.style.height = "10px"
                 rocket.style.width = "10px"
                 rocket.style.backgroundColor = "blue"
