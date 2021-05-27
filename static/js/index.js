@@ -14,7 +14,7 @@ const winWidth = window.innerWidth // width of screen in px
 
 // NOTE: when deploying, take argument out of io
 //"http://127.0.0.1:5000/chat"
-var socket = io("http://127.0.0.1:5000/chat")
+var socket = io()
 
 // game class
 class Game {
