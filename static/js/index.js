@@ -205,7 +205,7 @@ class Game {
         return { "ship": this.ship, "rockets": this.rockets }
     }
 }
-
+// NOTE: look at web app, even when ship is hit it stays spawned on another screen
 var game = null
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -339,13 +339,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ship == null) {
                 ship = document.createElement("img")
                 ship.id = "ship-" + user
-                ship.src = "/static/izzy.png"
+                ship.src = "/static/" + user + ".png"
                 ship.alt = "Ship"
                 ship.style.width = shipLength + "px"
                 ship.style.height = shipLength + "px"
                 ship.style.position = "absolute"
                 ship.style.zIndex = "5"
-                ship.style.backgroundColor = "blue"
                 document.documentElement.appendChild(ship)
             }
             // update left, top, and rotation CSS properties
